@@ -12,3 +12,7 @@ var App = {
 };
 
 App.init();
+// **** fields to send by id
+//		-ymca_corporate_name
+//		-ymca_corporate_number
+//		-state_of_incorporation

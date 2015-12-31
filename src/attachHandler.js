@@ -1,10 +1,12 @@
+var FormValidator = require('./formValidator.js');
 var Forms = require('./forms.js');
 
 var attachHandler = {
 	submitYmcaUserFormBtn: function(){
 	$('#ymcaUserForm').submit(function(e){
 		e.preventDefault();
-		Forms.submitYmcaUserForm();
+		var isValid = FormValidator.processYmcaUserForm();
+		!isValid ? null : Forms.submitYmcaUserForm();
 	});
 	}
 };

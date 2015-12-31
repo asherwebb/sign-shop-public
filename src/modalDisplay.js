@@ -1,3 +1,4 @@
+var LoadingUI = require('./loadingUI.js');
 
 var modalDisplay = {
 	clear: function(){
@@ -5,6 +6,7 @@ var modalDisplay = {
 		$('.modal-title').empty();
 	},
 	init: function(title, message){
+		LoadingUI.hide();
 		var title = title;
 		var message = message;
 		$('#myModal').modal('show');

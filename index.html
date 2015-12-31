@@ -14,21 +14,25 @@
 <body>
 <div class="container">
 	<div class="page-header">
-		<h1>Sign Shop <small>User Profile Form</small></h1>
+		<h1>Sign Shop <small>YMCA User Form</small></h1>
 	</div>
 	<div class="well">
 	<small class="text-danger">Fields marked with &ast; are required.</small>
 	</div>
+	<div class="panel">
+	<h4>Please enter the following information about your YMCA</h4>
+	</div>
 	<form class="form-horizontal">
+
 		<!-- ymca corporate name* -->
   		<div class="form-group">
     		<label for="ymca_corporate_name">YMCA Corporate Name <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="ymca_corporate_name" required>
+    		<input type="text" class="form-control" id="ymca_corporate_name" placeholder="YMCA Corporate Name" required>
   		</div>
   		<!-- ymca corporate #* -->
   		<div class="form-group">
     		<label for="ymca_corporate_number">YMCA Corporate Number <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="ymca_corporate_number" required>
+    		<input type="text" class="form-control" id="ymca_corporate_number" placeholder="YMCA Corporate Number" required>
   		</div>
   		<!-- state of incorporation* -->
   		<div class="form-group">
@@ -40,12 +44,12 @@
   		<!-- corporate address* -->
   		<div class="form-group">
     		<label for="corporate_address_line_one">Corporate Address <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="corporate_address_line_one" required>
+    		<input type="text" class="form-control" id="corporate_address_line_one" placeholder="Corporate Address" required>
   		</div>
   		<!-- city* -->
   		<div class="form-group">
     		<label for="corporate_city">City <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="corporate_city" required>
+    		<input type="text" class="form-control" id="corporate_city" placeholder="City" required>
   		</div>
   		<!-- state* -->
   		<div class="form-group">
@@ -57,64 +61,50 @@
   		<!-- zip code* -->
   		<div class="form-group">
     		<label for="corporate_zip">Zip <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="corporate_zip" required>
-  		</div>
-  		<!-- date1* -->
-  		<div class="form-group">
-    		<label for=""></label>
-    		<input type="" class="" id="" placeholder="">
-  		</div>
-  		<!-- YMCA* -->
-  		<div class="form-group">
-    		<label for="ymca">YMCA <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="ymca" required>
-  		</div>
-  		<!-- By* -->
-  		<div class="form-group">
-    		<label for=""></label>
-    		<input type="" class="" id="" placeholder="">
-  		</div>
-  		<!-- Name* -->
-  		<div class="form-group">
-    		<label for="name"></label>
-    		<input type="text" class="form-conrol" id="name" required>
-  		</div>
-  		<!-- email* -->
-  		<div class="form-group">
-    		<label for="email">Email <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="email" required>
-  		</div>
-  		<!-- title* -->
-  		<div class="form-group">
-    		<label for=""></label>
-    		<input type="" class="" id="" placeholder="">
-  		</div>
-  		<!-- date2* -->
-  		<div class="form-group">
-    		<label for=""></label>
-    		<input type="" class="" id="" placeholder="">
+    		<input type="text" class="form-control" id="corporate_zip" placeholder="Zip" required>
   		</div>
   		<!-- YMCA Branch Name (If different from Corporate Name.) -->
   		<div class="form-group">
     		<label for="ymca_branch_name">YMCA Branch Name <small>if different from Corporate Name</small></label>
-    		<input type="text" class="form-control" id="ymca_branch_name">
+    		<input type="text" class="form-control" id="ymca_branch_name" placeholder="YMCA Branch Name">
   		</div>
   		<!-- phone number* -->
   		<div class="form-group">
     		<label for="phone_number">Phone Number <small class="text-danger">&ast;</small></label>
-    		<input type="text" class="form-control" id="phone_number" required>
+    		<input type="text" class="form-control" id="phone_number" placeholder="Phone Number" required >
   		</div>
+ 
+ 		<div class="panel">
+ 		<h4>Please enter the following information about yourself</h4>
+ 		</div>
+
+  		<!-- Name* -->
+  		<div class="form-group">
+    		<label for="name">Name <small class="text-danger">&ast;</small></label>
+    		<input type="text" class="form-control" id="name" placeholder="Name" required>
+  		</div>
+  		<!-- email* -->
+  		<div class="form-group">
+    		<label for="email">Email <small class="text-danger">&ast;</small></label>
+    		<input type="text" class="form-control" id="email" placeholder="Email" required>
+  		</div>
+  		<!-- title* -->
+  		<div class="form-group">
+    		<label for="title">Title <small class="text-danger">&ast;</small></label>
+    		<input type="text" class="form-control" id="title" placeholder="Title">
+  		</div>
+
   		<!-- agree to terms of use checkbox* -->
   		<div class="panel">
+  		<h4>Agree to Terms  <small class="text-danger">&ast;</small> </h4>
+  		</div>
   		<div class="form-group">
-    		<label for="agree_to_terms" class="checkbox-inline"><input type="checkbox" id="agree_to_terms" > Agree to Terms <small class="text-danger">&ast;</small> 
+    		<label for="agree_to_terms" class="checkbox-inline"><input type="checkbox" id="agree_to_terms" >   		By clicking this check box you agree that you have read and agree to our terms and conditions for using this software. <a href="terms_and_conditions.html" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=1000,height=500,toolbar=1,resizable=0'); return false;">Read them here</a> 
 		</label>
   		</div>
-  		<small>
-  		By clicking this check box you agree that you have read and agree to our terms and conditions for using this software. <a href="terms_and_conditions.html" onclick="window.open(this.href, 'mywin',
-'left=20,top=20,width=1000,height=500,toolbar=1,resizable=0'); return false;">Read them here</a>
-	</small>
-	</div>
+ 
+	
 
   		<div class="form-group">
   		<button type="submit" class="btn btn-default">Submit</button>

@@ -1,18 +1,14 @@
 var Parse = require('parse');
+var AttachHandler = require('./attachHandler.js');
 
 var App = {
 	init: function(){
 		this.attachEventHandlers();
-		console.log('init');
 	},
 	attachEventHandlers: function(){
-		//submit
+		AttachHandler.submitYmcaUserFormBtn();
 	}
 
 };
 
 App.init();
-// **** fields to send by id
-//		-ymca_corporate_name
-//		-ymca_corporate_number
-//		-state_of_incorporation

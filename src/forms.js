@@ -2,6 +2,7 @@
 //keep parse config keys out of github!!
 var Config = require('./config.js');
 var Parse = require('parse');
+var ModalDisplay = require('./modalDisplay.js');
 
 var forms = {
 	submitYmcaUserForm: function(){
@@ -40,16 +41,28 @@ var forms = {
 			terms_of_use_agreement_verified: terms_of_use_agreement_verified
 		 }, {
 			success: function(userFormData){
-				alert('success');
-			},
+				var message = 'Your information has been submitted.';
+				var title = '<span class="text-success">Submission Success</span>';
+				ModalDisplay.clear();
+				ModalDisplay.init(title, message);
+				this.resetYmcaUserForm();
+				//proceed to the dynamic corporate # check
+				//if the corporate # already exists user does not have to sign the contract
+				//if not the contract will be dynamically generate
+			}.bind( this ),
 			error: function(userFormData, error){
-				alert('error');
-			}	
+				var message = 'Error: ' + error.code + ' - Please check your network connection. If issues persist please contact support.';
+				var title = '<span class="text-danger"> Submission Error </span>';
+				//bootstrap modal
+				ModalDisplay.clear();
+				ModalDisplay.init(title, message);
+				this.resetYmcaUserForm();
+			}.bind( this )	
 		 });
-
-
-
-
+	},
+	resetYmcaUserForm: function(){
+		//reset all values due to ajax error communicating with parse.
+		$('#ymcaUserForm')[0].reset();
 	}
 };
 

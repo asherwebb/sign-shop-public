@@ -3,6 +3,8 @@
 var Config = require('./config.js');
 var Parse = require('parse');
 var ModalDisplay = require('./modalDisplay.js');
+var Cloud = require('./cloud.js');
+//Cloud.hasContractBeenSigned() - returns true or false based on parse.com
 
 var forms = {
 	submitYmcaUserForm: function(){
@@ -41,10 +43,19 @@ var forms = {
 			terms_of_use_agreement_verified: terms_of_use_agreement_verified
 		 }, {
 			success: function(userFormData){
-				var message = 'Your information has been submitted.';
-				var title = '<span class="text-success">Submission Success</span>';
+				// var message = 'Your information has been submitted.';
+				// var title = '<span class="text-success">Checking records...</span>';
 				ModalDisplay.clear();
-				ModalDisplay.init(title, message);
+				
+				var hasContractBeenSigned = Cloud.hasContractBeenSigned( ymca_corporate_number );
+				
+				console.log(hasContractBeenSigned);
+				// if( hasContractBeenSigned ){
+				// 	ModalDisplay.init('proceed', 'someone from your organization has signed the contract');
+				// }else{
+				// 	ModalDisplay.init('stop', 'you need to sign the contract before proceeding');
+				// }
+
 				this.resetYmcaUserForm();
 				//proceed to the dynamic corporate # check
 				//if the corporate # already exists user does not have to sign the contract

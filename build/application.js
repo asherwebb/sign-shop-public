@@ -10300,7 +10300,45 @@ var attachHandler = {
 };
 
 module.exports = attachHandler;
-},{"./formValidator.js":81,"./forms.js":82,"./loadingUI.js":83}],80:[function(require,module,exports){
+},{"./formValidator.js":82,"./forms.js":83,"./loadingUI.js":84}],80:[function(require,module,exports){
+var Config = require('./config.js');
+var Parse = require('parse');
+var ModalDisplay = require('./modalDisplay.js')
+var cloud = {
+	hasContractBeenSigned: function( organizationId ){
+		console.log('hasContractBeenSigned?');
+		var organizationId = organizationId;
+		Parse.initialize(Config.PARSE_APP_ID, Config.PARSE_JS_KEY);
+		var FormData = Parse.Object.extend('ymca_form_user_data');
+		var query = new Parse.Query(FormData);
+		query.equalTo('ymca_corporate_number', organizationId);
+		query.find({
+			success: function(results){
+				//alert('success');
+				console.log(results);
+				ModalDisplay.clear();
+				console.log(results.length);
+				if( results.length > 1 ){
+					ModalDisplay.init('proceed', 'someone from your organization has signed the contract');
+				}else{
+					ModalDisplay.init('stop', 'you need to sign the contract before proceeding');
+				}
+				//1 means no match (user signed up in parse first)
+				//greater than 1 means someone has already signed it
+				//if it is less than 1 there is an error - should not be possible in success fn
+			}.bind(this),
+			error: function(results, error){
+				alert('error');
+				//FIX ME - need an errorDisplay.js file to process all errors
+				//error.message
+				//error.code
+			}.bind(this)
+		});
+	}
+}
+
+module.exports = cloud;
+},{"./config.js":81,"./modalDisplay.js":85,"parse":2}],81:[function(require,module,exports){
 //*****************************************************************************###
 // ***********  P L E A S E  N O T E 	************************************** ###
 // ***** 	make sure this file is kept from github  					 ***** ###
@@ -10315,7 +10353,7 @@ var config = {
 };
 
 module.exports = config;
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 var formValidator = {
 	processYmcaUserForm: function(){
 		//make sure state fields have selected val
@@ -10343,12 +10381,14 @@ var formValidator = {
 };
 
 module.exports = formValidator;
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 //ymca_form_user_data is parse class
 //keep parse config keys out of github!!
 var Config = require('./config.js');
 var Parse = require('parse');
 var ModalDisplay = require('./modalDisplay.js');
+var Cloud = require('./cloud.js');
+//Cloud.hasContractBeenSigned() - returns true or false based on parse.com
 
 var forms = {
 	submitYmcaUserForm: function(){
@@ -10387,10 +10427,19 @@ var forms = {
 			terms_of_use_agreement_verified: terms_of_use_agreement_verified
 		 }, {
 			success: function(userFormData){
-				var message = 'Your information has been submitted.';
-				var title = '<span class="text-success">Submission Success</span>';
+				// var message = 'Your information has been submitted.';
+				// var title = '<span class="text-success">Checking records...</span>';
 				ModalDisplay.clear();
-				ModalDisplay.init(title, message);
+				
+				var hasContractBeenSigned = Cloud.hasContractBeenSigned( ymca_corporate_number );
+				
+				console.log(hasContractBeenSigned);
+				// if( hasContractBeenSigned ){
+				// 	ModalDisplay.init('proceed', 'someone from your organization has signed the contract');
+				// }else{
+				// 	ModalDisplay.init('stop', 'you need to sign the contract before proceeding');
+				// }
+
 				this.resetYmcaUserForm();
 				//proceed to the dynamic corporate # check
 				//if the corporate # already exists user does not have to sign the contract
@@ -10413,7 +10462,7 @@ var forms = {
 };
 
 module.exports = forms;
-},{"./config.js":80,"./modalDisplay.js":84,"parse":2}],83:[function(require,module,exports){
+},{"./cloud.js":80,"./config.js":81,"./modalDisplay.js":85,"parse":2}],84:[function(require,module,exports){
 var Spinner = require('spin');
 
 var loadingUI = {
@@ -10428,7 +10477,7 @@ var loadingUI = {
 };
 
 module.exports = loadingUI;
-},{"spin":77}],84:[function(require,module,exports){
+},{"spin":77}],85:[function(require,module,exports){
 var LoadingUI = require('./loadingUI.js');
 
 var modalDisplay = {
@@ -10447,4 +10496,4 @@ var modalDisplay = {
 }
 
 module.exports = modalDisplay;
-},{"./loadingUI.js":83}]},{},[78]);
+},{"./loadingUI.js":84}]},{},[78]);

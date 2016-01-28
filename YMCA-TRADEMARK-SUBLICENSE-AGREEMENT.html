@@ -1889,15 +1889,17 @@ style='mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
 
 <p>Date: <span class="signedDate"></span></p>
 <h1>By signing below you authorize this contract to be executed:</h1>
-<fieldset>
+<fieldset id="firstNameBox">
 <label>First Name</label>
 <input type="text" class="submit-signature-first-name" />
 </fieldset>
-<fieldset>
+<fieldset id="lastNameBox">
 <label>Last Name</label>
 <input type="text" class="submit-signature-last-name" />
 </fieldset>
+<div class="submitBox">
 <button class="btn-submit">Submit Contract</button>
+</div>
 </div>
 
 <div style='mso-element:footnote-list'><![if !supportFootnotes]><br clear=all>
@@ -1923,6 +1925,7 @@ enlist members, market programs, and solicit financial support.</p>
 </div>
 
 <script type="text/javascript">
+var contractVersion = '1.0';
 Parse.initialize('FW9CvpQG5XkdJtGsDHaCYXIOD32B5VxVTYwLemUG','h11Rn94HrJIXZypzTU1tiDYrJFq3shE6lo2DCUGO');
 //get handle from local storage
 //once they submit the contract grab the object with the registering individual from parse and attach true to the contract_signee field
@@ -1937,20 +1940,40 @@ Parse.initialize('FW9CvpQG5XkdJtGsDHaCYXIOD32B5VxVTYwLemUG','h11Rn94HrJIXZypzTU1
 //5-complete transaction by letting them know to check their email if successful
 //No need to route them because the email link will do so
 
-$(".ymcaCorporateName").append('Buncombe Municipal YMCA');
-$('.ymcaCorporateNumber').append('3426346');
-$('.stateOfIncorporation').append('NC');
-$('.corporateAddrLine1').append('401 Rockwell Dr.');
-$('.corporateCity').append('Greensboro');
-$('.corporateState').append('NC');
-$('.corporateZip').append('28801');
+var dynamicFieldPopulationDataSrc = localStorage.getItem('parseData');
+dynamicFieldPopulationDataSrc = JSON.parse(dynamicFieldPopulationDataSrc);
+/*
+      ymca_corporate_name
+      ymca_corporate_number
+      state_of_incorporation
+      corporate_address_line_one
+      corporate_city
+      corporate_state
+      corporate_zip
+      ymca_branch_name
+      phone_number
+      name
+      email
+      title
+      terms_of_use_agreement_verified
+*/
+var fieldData = dynamicFieldPopulationDataSrc;
+var date = new Date();
+var str = date.toString();
+$(".ymcaCorporateName").append(fieldData.ymca_corporate_name);
+$('.ymcaCorporateNumber').append(fieldData.ymca_corporate_number);
+$('.stateOfIncorporation').append(fieldData.state_of_incorporation);
+$('.corporateAddrLine1').append(fieldData.corporate_address_line_one);
+$('.corporateCity').append(fieldData.corporate_city);
+$('.corporateState').append(fieldData.corporate_state);
+$('.corporateZip').append(fieldData.corporate_zip);
 
-$('.signeeYMCA').append('Bent Creek YMCA');
-$('.signeeFullName').append('Jane Brooke Smith');
-$('.signeeName').append('Jane Smith')
-$('.signeeEmail').append('jane@j.co');
-$('.signeeTitle').append('Executive Director');
-$('.signedDate').append('01-28-2016');
+$('.signeeYMCA').append(fieldData.ymca_branch_name);
+$('.signeeFullName').append(fieldData.phone_number);
+$('.signeeName').append(fieldData.name)
+$('.signeeEmail').append(fieldData.email);
+$('.signeeTitle').append(fieldData.title);
+$('.signedDate').append(str);
 
 $('.btn-submit').click( function(e){
   e.preventDefault();
@@ -1970,13 +1993,44 @@ $('.btn-submit').click( function(e){
     success: function(ymcaUserObject){
       console.log('found ymca user object with email');
       //console.log(object);
+      //F I X  M E set signed date
       ymcaUserObject.set('contract_signee' , true);
+      ymcaUserObject.set('contract_date' , str);
+      ymcaUserObject.set('contract_version' , contractVersion);
       ymcaUserObject.save({
         success: function(object){
-          //create error with node
+          var shopifyUtil = {
+            accountCreate: function(){
+            var data = localStorage.getItem('shopifyData');
+
+          
+          var url = 'http://107.170.181.44:8080/create-account';
+          $.ajax({
+            url:url,
+            data:data,
+            type:'post',
+            contentType: "application/json",
+            success: function(result){
+              console.log(result);
+                     alert('Success - Notification Sent! To complete your account setup please check your email for a registration link. Please print this contract for your records.');
+                     $('#firstNameBox').empty().append(fieldData.name);
+                     $('#lastNameBox').empty().append('<hr />Digital Signature');
+                     $('.submitBox').empty().append('<p>This contract was signed: ' + str);
+            },
+            error: function(error){
+              alert('Error processing request');
+            }
+          });
+          //end send to node
+   
+
+  }
+};
+shopifyUtil.accountCreate();
+            //re-render the page with a confirmation to print for records
         },
         error: function(error){
-          //something went wrong processing the contract_signee field
+          alert("Error processing contract signature. Please try again");
         }
       });
 

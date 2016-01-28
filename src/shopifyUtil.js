@@ -11,12 +11,29 @@
 // https://www.shopify.com/partners/blog/16603843-5-things-we-learned-creating-our-first-shopify-app#
 //
 
-var config = require('./config.js');
+var ModalDisplay = require('./modalDisplay.js');
 
 var shopifyUtil = {
-	init: function(){
-		//send data to node.js server middleware
-		//see what response is
+	accountCreate: function(){
+				var data = localStorage.getItem('shopifyData');
+
+					
+					var url = 'http://107.170.181.44:8080/create-account';
+					$.ajax({
+						url:url,
+						data:data,
+						type:'post',
+						contentType: "application/json",
+						success: function(result){
+							console.log(result);
+						},
+						error: function(error){
+							alert('Error processing request');
+						}
+					});
+					//end send to node
+					ModalDisplay.init('Success', 'Notification Sent!', '<p>To complete your account setup please check your email for a registration link</p>');
+
 	}
-}
+};
 module.exports = shopifyUtil;

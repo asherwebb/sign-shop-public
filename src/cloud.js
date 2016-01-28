@@ -14,25 +14,8 @@ var cloud = {
 			success: function(results){		
 				ModalDisplay.clear();
 				if( results.length > 0 ){
-					//ShopifyUtil.accountCreate();
-					var data = localStorage.getItem('shopifyData');
-
-					//FIX ME: send to node
-					var url = 'http://107.170.181.44:8080/create-account';
-					$.ajax({
-						url:url,
-						data:data,
-						type:'post',
-						contentType: "application/json",
-						success: function(result){
-							console.log(result);
-						},
-						error: function(error){
-							alert('Error processing request');
-						}
-					});
-					//end send to node
-					ModalDisplay.init('Success', 'Notification Sent!', '<p>To complete your account setup please check your email for a registration link</p>');
+					ShopifyUtil.accountCreate();
+					
 				}else{
 					ModalDisplay.init('Contract', 'No one from your organization has signed our contract agreement. You will need to sign the contract digitally before proceeding. ',' <br /> <button class="goToContract btn btn-default">Go to Contract</button>');
 				}

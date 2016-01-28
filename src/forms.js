@@ -75,29 +75,30 @@ var forms = {
 			terms_of_use_agreement_verified: terms_of_use_agreement_verified
 			};
 		var shopifyData = {
-  "customer": {
-    "first_name": fname,
-    "last_name": lname,
-    "email": email,
-    "verified_email": true,
-    "addresses": [
+  customer: {
+    first_name: fname,
+    last_name: lname,
+    email: email,
+    verified_email: true,
+    addresses: [
       {
-        "address1": corporate_address_line_one,
-        "city": corporate_city,
-        "state": corporate_state,
-        "phone": phone_number,
-        "zip": corporate_zip,
-        "last_name": "",
-        "first_name": ymca_branch_name,
-        "country": "USA"
+        address1: corporate_address_line_one,
+        city: corporate_city,
+        state: corporate_state,
+        phone: phone_number,
+        zip: corporate_zip,
+        last_name: lname,
+        first_name: fname,
+        country: "US"
       }
     ],
-    "send_email_invite": true
+    send_email_invite: true
   }
 };
 		var parseDataLS = JSON.stringify(parseData);
 		localStorage.setItem( 'parseData' , parseDataLS );
-		localStorage.setItem( 'shopifyData' , shopifyData);
+		var shopifyDataLS = JSON.stringify(shopifyData);
+		localStorage.setItem( 'shopifyData' , shopifyDataLS);
 
 		userFormData.save(parseData, {
 			success: function(object){
@@ -111,7 +112,7 @@ var forms = {
 				
 
 
-				this.resetYmcaUserForm();
+				forms.resetYmcaUserForm();
 				//proceed to the dynamic corporate # check
 				//if the corporate # already exists user does not have to sign the contract
 				//if not the contract will be dynamically generate

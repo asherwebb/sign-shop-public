@@ -10303,10 +10303,10 @@ module.exports = attachHandler;
 },{"./formValidator.js":82,"./forms.js":83,"./loadingUI.js":84}],80:[function(require,module,exports){
 var Config = require('./config.js');
 var Parse = require('parse');
-var ModalDisplay = require('./modalDisplay.js')
+var ModalDisplay = require('./modalDisplay.js');
+var ShopifyUtil = require('./shopifyUtil');
 var cloud = {
 	hasContractBeenSigned: function( organizationId ){
-		console.log('hasContractBeenSigned?');
 		var organizationId = organizationId;
 		Parse.initialize(Config.PARSE_APP_ID, Config.PARSE_JS_KEY);
 		var FormData = Parse.Object.extend('ymca_form_user_data');
@@ -10314,23 +10314,31 @@ var cloud = {
 		query.equalTo('ymca_corporate_number', organizationId);
 		query.equalTo('contract_signee' , true);
 		query.find({
-			success: function(results){
-				//alert('success');
-				console.log(results);
+			success: function(results){		
 				ModalDisplay.clear();
-				console.log(results.length);
-				if( results.length > 1 ){
-					//FIRE OFF NODE CREATE SHOPIFY ACCT AJAX
-					//localStorage.getItem('shopifyData');
-					//
-					ModalDisplay.init('proceed', 'someone from your organization has signed the contract', '<p>To complete your account setup please check your email for a registration link</p>');
-					//we need to send the registration details to node.js to finalize account creation
+				if( results.length > 0 ){
+					//ShopifyUtil.accountCreate();
+					var data = localStorage.getItem('shopifyData');
+
+					//FIX ME: send to node
+					var url = 'http://107.170.181.44:8080/create-account';
+					$.ajax({
+						url:url,
+						data:data,
+						type:'post',
+						contentType: "application/json",
+						success: function(result){
+							console.log(result);
+						},
+						error: function(error){
+							alert('Error processing request');
+						}
+					});
+					//end send to node
+					ModalDisplay.init('Success', 'Notification Sent!', '<p>To complete your account setup please check your email for a registration link</p>');
 				}else{
-					ModalDisplay.init('stop', 'you need to sign the contract before proceeding','<button class="goToContract">Go to Contract</button>');
+					ModalDisplay.init('Contract', 'No one from your organization has signed our contract agreement. You will need to sign the contract digitally before proceeding. ',' <br /> <button class="goToContract btn btn-default">Go to Contract</button>');
 				}
-				//1 means no match (user signed up in parse first)
-				//greater than 1 means someone has already signed it
-				//if it is less than 1 there is an error - should not be possible in success fn
 			}.bind(this),
 			error: function(results, error){
 				alert('error');
@@ -10343,7 +10351,7 @@ var cloud = {
 }
 
 module.exports = cloud;
-},{"./config.js":81,"./modalDisplay.js":85,"parse":2}],81:[function(require,module,exports){
+},{"./config.js":81,"./modalDisplay.js":85,"./shopifyUtil":86,"parse":2}],81:[function(require,module,exports){
 //*****************************************************************************###
 // ***********  P L E A S E  N O T E 	************************************** ###
 // ***** 	make sure this file is kept from github  					 ***** ###
@@ -10465,29 +10473,30 @@ var forms = {
 			terms_of_use_agreement_verified: terms_of_use_agreement_verified
 			};
 		var shopifyData = {
-  "customer": {
-    "first_name": fname,
-    "last_name": lname,
-    "email": email,
-    "verified_email": true,
-    "addresses": [
+  customer: {
+    first_name: fname,
+    last_name: lname,
+    email: email,
+    verified_email: true,
+    addresses: [
       {
-        "address1": corporate_address_line_one,
-        "city": corporate_city,
-        "state": corporate_state,
-        "phone": phone_number,
-        "zip": corporate_zip,
-        "last_name": "",
-        "first_name": ymca_branch_name,
-        "country": "USA"
+        address1: corporate_address_line_one,
+        city: corporate_city,
+        state: corporate_state,
+        phone: phone_number,
+        zip: corporate_zip,
+        last_name: lname,
+        first_name: fname,
+        country: "US"
       }
     ],
-    "send_email_invite": true
+    send_email_invite: true
   }
 };
 		var parseDataLS = JSON.stringify(parseData);
 		localStorage.setItem( 'parseData' , parseDataLS );
-		localStorage.setItem( 'shopifyData' , shopifyData);
+		var shopifyDataLS = JSON.stringify(shopifyData);
+		localStorage.setItem( 'shopifyData' , shopifyDataLS);
 
 		userFormData.save(parseData, {
 			success: function(object){
@@ -10501,7 +10510,7 @@ var forms = {
 				
 
 
-				this.resetYmcaUserForm();
+				forms.resetYmcaUserForm();
 				//proceed to the dynamic corporate # check
 				//if the corporate # already exists user does not have to sign the contract
 				//if not the contract will be dynamically generate
@@ -10567,4 +10576,27 @@ var modalDisplay = {
 }
 
 module.exports = modalDisplay;
-},{"./attachHandler.js":79,"./loadingUI.js":84}]},{},[78]);
+},{"./attachHandler.js":79,"./loadingUI.js":84}],86:[function(require,module,exports){
+
+// ############# ****     I N T E R F A C E  W I T H  S H O P I F Y  C U S T O M E R  A P I *** ##### 
+// ############# ************ 	https://docs.shopify.com/api/customer	*** ##### *** ##### *** #####
+// ############# ************ 	create a user in shopfiy 				*** ##### *** ##### *** #####
+// ############# ************ 	use users registration details 			*** ##### *** ##### *** #####
+// ############# ************ 	store created password					*** ##### *** ##### *** #####
+// ############# ************ 	email that to users via middleware		*** ##### *** ##### *** #####
+// ############# ************ 	seamlessly login (hopefully)   			*** ##### *** ##### *** #####
+// ############# ************   https://www.npmjs.com/package/shopify-node-api	  *** ##### *** #####
+// ############# ************ https://docs.shopify.com/api/uiintegrations/application-proxies * #####
+// https://www.shopify.com/partners/blog/16603843-5-things-we-learned-creating-our-first-shopify-app#
+//
+
+var config = require('./config.js');
+
+var shopifyUtil = {
+	init: function(){
+		//send data to node.js server middleware
+		//see what response is
+	}
+}
+module.exports = shopifyUtil;
+},{"./config.js":81}]},{},[78]);

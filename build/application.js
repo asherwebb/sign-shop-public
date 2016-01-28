@@ -10317,25 +10317,8 @@ var cloud = {
 			success: function(results){		
 				ModalDisplay.clear();
 				if( results.length > 0 ){
-					//ShopifyUtil.accountCreate();
-					var data = localStorage.getItem('shopifyData');
-
-					//FIX ME: send to node
-					var url = 'http://107.170.181.44:8080/create-account';
-					$.ajax({
-						url:url,
-						data:data,
-						type:'post',
-						contentType: "application/json",
-						success: function(result){
-							console.log(result);
-						},
-						error: function(error){
-							alert('Error processing request');
-						}
-					});
-					//end send to node
-					ModalDisplay.init('Success', 'Notification Sent!', '<p>To complete your account setup please check your email for a registration link</p>');
+					ShopifyUtil.accountCreate();
+					
 				}else{
 					ModalDisplay.init('Contract', 'No one from your organization has signed our contract agreement. You will need to sign the contract digitally before proceeding. ',' <br /> <button class="goToContract btn btn-default">Go to Contract</button>');
 				}
@@ -10500,7 +10483,7 @@ var forms = {
 
 		userFormData.save(parseData, {
 			success: function(object){
-				alert("user form data has been saved");
+				//alert("user form data has been saved");
 				// var message = 'Your information has been submitted.';
 				// var title = '<span class="text-success">Checking records...</span>';
 				
@@ -10590,13 +10573,30 @@ module.exports = modalDisplay;
 // https://www.shopify.com/partners/blog/16603843-5-things-we-learned-creating-our-first-shopify-app#
 //
 
-var config = require('./config.js');
+var ModalDisplay = require('./modalDisplay.js');
 
 var shopifyUtil = {
-	init: function(){
-		//send data to node.js server middleware
-		//see what response is
+	accountCreate: function(){
+				var data = localStorage.getItem('shopifyData');
+
+					
+					var url = 'http://107.170.181.44:8080/create-account';
+					$.ajax({
+						url:url,
+						data:data,
+						type:'post',
+						contentType: "application/json",
+						success: function(result){
+							console.log(result);
+						},
+						error: function(error){
+							alert('Error processing request');
+						}
+					});
+					//end send to node
+					ModalDisplay.init('Success', 'Notification Sent!', '<p>To complete your account setup please check your email for a registration link</p>');
+
 	}
-}
+};
 module.exports = shopifyUtil;
-},{"./config.js":81}]},{},[78]);
+},{"./modalDisplay.js":85}]},{},[78]);

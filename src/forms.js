@@ -102,7 +102,7 @@ var forms = {
 
 		userFormData.save(parseData, {
 			success: function(object){
-				alert("user form data has been saved");
+				//alert("user form data has been saved");
 				// var message = 'Your information has been submitted.';
 				// var title = '<span class="text-success">Checking records...</span>';
 				

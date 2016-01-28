@@ -10274,7 +10274,7 @@ var AttachHandler = require('./attachHandler.js');
 
 var App = {
 	init: function(){
-		this.attachEventHandlers();
+		App.attachEventHandlers();
 	},
 	attachEventHandlers: function(){
 		AttachHandler.submitYmcaUserFormBtn();
@@ -10290,7 +10290,7 @@ var LoadingUI = require('./loadingUI.js');
 
 var attachHandler = {
 	submitYmcaUserFormBtn: function(){
-	$('#ymcaUserForm').submit(function(e){
+	$('#submit-ymca-form').click(function(e){
 		e.preventDefault();
 		LoadingUI.show();
 		var isValid = FormValidator.processYmcaUserForm();
@@ -10312,6 +10312,7 @@ var cloud = {
 		var FormData = Parse.Object.extend('ymca_form_user_data');
 		var query = new Parse.Query(FormData);
 		query.equalTo('ymca_corporate_number', organizationId);
+		query.equalTo('contract_signee' , true);
 		query.find({
 			success: function(results){
 				//alert('success');
@@ -10319,9 +10320,13 @@ var cloud = {
 				ModalDisplay.clear();
 				console.log(results.length);
 				if( results.length > 1 ){
-					ModalDisplay.init('proceed', 'someone from your organization has signed the contract');
+					//FIRE OFF NODE CREATE SHOPIFY ACCT AJAX
+					//localStorage.getItem('shopifyData');
+					//
+					ModalDisplay.init('proceed', 'someone from your organization has signed the contract', '<p>To complete your account setup please check your email for a registration link</p>');
+					//we need to send the registration details to node.js to finalize account creation
 				}else{
-					ModalDisplay.init('stop', 'you need to sign the contract before proceeding');
+					ModalDisplay.init('stop', 'you need to sign the contract before proceeding','<button class="goToContract">Go to Contract</button>');
 				}
 				//1 means no match (user signed up in parse first)
 				//greater than 1 means someone has already signed it
@@ -10353,6 +10358,7 @@ var config = {
 };
 
 module.exports = config;
+
 },{}],82:[function(require,module,exports){
 var formValidator = {
 	processYmcaUserForm: function(){
@@ -10392,6 +10398,8 @@ var Cloud = require('./cloud.js');
 
 var forms = {
 	submitYmcaUserForm: function(){
+		//alert('submitYmcaUserForm');
+
 		// **** fields to send by id
 		var ymca_corporate_name = $('#ymca_corporate_name').val(); //-input, parse string
 		var ymca_corporate_number = $('#ymca_corporate_number').val(); //-input, parse string
@@ -10402,16 +10410,46 @@ var forms = {
 		var corporate_zip = $('#corporate_zip').val(); //-input
 		var ymca_branch_name = $('#ymca_branch_name').val(); //-input
 		var phone_number = $('#phone_number').val(); //-input
-		var name = $('#name').val(); //-input
+		var fname = $('#fname').val(); //-input
+		var lname = $('#lname').val();
 		var email = $('#email').val(); //-input
 		var title = $('#title').val(); //-input
 		//terms_of_use_agreement_verified - auto-set to true(they have to have the agree btn clicked to proceed)
 		var terms_of_use_agreement_verified = true;
 
+		//build out 2 objects - the userFormData object and the node create account payload for the shopify api.
+		//store them both in ls
+
 		Parse.initialize( Config.PARSE_APP_ID, Config.PARSE_JS_KEY );
+		//FIX ME: we need to make sure we do not have a duplicate email for that user object
+		var UserFormQuery = Parse.Object.extend("ymca_form_user_data")
+		var userFormQuery = new Parse.Query(UserFormQuery);
+		userFormQuery.equalTo('email', email);
+		userFormQuery.find({
+			success: function(results){
+				console.log(results.length);
+				
+				if( results.length === 0 ){
+				
+					createParseYMCAUserObject();
+
+				}else{
+					alert('Sorry that email is already taken. Please try again.');
+					$('#email').val('');
+					$('#email').css({"border":"1px solid red"});
+					return;
+				}
+			},
+			error: function(err){
+
+			}
+		});
+
+		function createParseYMCAUserObject(){
+				console.log('createParseYMCAUserObject fires');
 		var UserFormData = Parse.Object.extend("ymca_form_user_data");
 		var userFormData = new UserFormData();
-		userFormData.save({
+		var parseData =	{
 			ymca_corporate_name: ymca_corporate_name,
 			ymca_corporate_number: ymca_corporate_number,
 			state_of_incorporation: state_of_incorporation,
@@ -10421,24 +10459,47 @@ var forms = {
 			corporate_zip: corporate_zip,
 			ymca_branch_name: ymca_branch_name,
 			phone_number: phone_number,
-			name: name,
+			name: fname + ' ' + lname,
 			email: email,
 			title: title,
 			terms_of_use_agreement_verified: terms_of_use_agreement_verified
-		 }, {
-			success: function(userFormData){
+			};
+		var shopifyData = {
+  "customer": {
+    "first_name": fname,
+    "last_name": lname,
+    "email": email,
+    "verified_email": true,
+    "addresses": [
+      {
+        "address1": corporate_address_line_one,
+        "city": corporate_city,
+        "state": corporate_state,
+        "phone": phone_number,
+        "zip": corporate_zip,
+        "last_name": "",
+        "first_name": ymca_branch_name,
+        "country": "USA"
+      }
+    ],
+    "send_email_invite": true
+  }
+};
+		var parseDataLS = JSON.stringify(parseData);
+		localStorage.setItem( 'parseData' , parseDataLS );
+		localStorage.setItem( 'shopifyData' , shopifyData);
+
+		userFormData.save(parseData, {
+			success: function(object){
+				alert("user form data has been saved");
 				// var message = 'Your information has been submitted.';
 				// var title = '<span class="text-success">Checking records...</span>';
-				ModalDisplay.clear();
 				
-				var hasContractBeenSigned = Cloud.hasContractBeenSigned( ymca_corporate_number );
 				
-				console.log(hasContractBeenSigned);
-				// if( hasContractBeenSigned ){
-				// 	ModalDisplay.init('proceed', 'someone from your organization has signed the contract');
-				// }else{
-				// 	ModalDisplay.init('stop', 'you need to sign the contract before proceeding');
-				// }
+				Cloud.hasContractBeenSigned( ymca_corporate_number );
+				
+				
+
 
 				this.resetYmcaUserForm();
 				//proceed to the dynamic corporate # check
@@ -10454,6 +10515,7 @@ var forms = {
 				this.resetYmcaUserForm();
 			}.bind( this )	
 		 });
+		}//createParseYMCAUserObject
 	},
 	resetYmcaUserForm: function(){
 		//reset all values due to ajax error communicating with parse.
@@ -10479,21 +10541,30 @@ var loadingUI = {
 module.exports = loadingUI;
 },{"spin":77}],85:[function(require,module,exports){
 var LoadingUI = require('./loadingUI.js');
+var AttachHandler = require('./attachHandler.js');
 
 var modalDisplay = {
 	clear: function(){
 		$('.modal-body').empty();
 		$('.modal-title').empty();
 	},
-	init: function(title, message){
+	init: function(title, message, footer){
 		LoadingUI.hide();
+		var footer = footer;
 		var title = title;
 		var message = message;
 		$('#myModal').modal('show');
-		$('.modal-body').append(message);
+		$('.modal-body').append(message).append(footer);
 		$('.modal-title').append(title);
+		modalDisplay.attachHandler();
+	},
+	attachHandler: function(){
+		$('.goToContract').click( function(e){
+			e.preventDefault();
+			window.location.href="YMCA-TRADEMARK-SUBLICENSE-AGREEMENT.html";
+		});
 	}
 }
 
 module.exports = modalDisplay;
-},{"./loadingUI.js":84}]},{},[78]);
+},{"./attachHandler.js":79,"./loadingUI.js":84}]},{},[78]);

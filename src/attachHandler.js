@@ -4,7 +4,7 @@ var LoadingUI = require('./loadingUI.js');
 
 var attachHandler = {
 	submitYmcaUserFormBtn: function(){
-	$('#ymcaUserForm').submit(function(e){
+	$('#submit-ymca-form').click(function(e){
 		e.preventDefault();
 		LoadingUI.show();
 		var isValid = FormValidator.processYmcaUserForm();

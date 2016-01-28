@@ -28,7 +28,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
         <h4 class="modal-title" id="myModalLabel"></h4>
       </div>
       <div class="modal-body">
@@ -118,8 +118,9 @@
  		<div class="row">
 	  		<!-- Name* -->
 	  		<div class="form-group col-md-6">
-	    		<label for="name">Name <small class="text-danger">&ast;</small></label>
-	    		<input type="text" class="form-control medium-input" id="name" placeholder="Name" required>
+	    		<label>Name <small class="text-danger">&ast;</small></label>
+	    		<input type="text" class="form-control small-input" id="fname" placeholder="First Name" required>
+	    		<input type="text" class="form-control small-input" id="lname" placeholder="Last Name" required>
 	  		</div>
 	  		<!-- title* -->
 	  		<div class="form-group col-md-6">
@@ -139,15 +140,15 @@
   		<!-- agree to terms of use checkbox* -->
 
   		<div class="form-group">
-    		<label for="agree_to_terms" class="checkbox-inline"><input type="checkbox" id="agree_to_terms" required > <label>Agree to Terms  <small class="text-danger">&ast;</small></label> By clicking this check box you agree that you have read and agree to our terms and conditions for using this software. <a href="terms_and_conditions.html" onclick="window.open(this.href, 'mywin',
+    		<label for="agree_to_terms" class="checkbox-inline"><input type="checkbox" id="agree_to_terms" required > Agree to Terms  <small class="text-danger">&ast;</small></label> By clicking this check box you agree that you have read and agree to our terms and conditions for using this software. <a href="terms_and_conditions.html" onclick="window.open(this.href, 'mywin',
 'left=20,top=20,width=1000,height=500,toolbar=1,resizable=0'); return false;">Read them here</a> 
-		</label>
+		
   		</div>
  
 	
 
   		<div class="form-group">
-  		<p><input type="submit" class="btn btn-default" value="Submit"> 
+  		<p><input type="submit" class="btn btn-default" id="submit-ymca-form" value="Submit"> 
   		</p>
   		</div>
 

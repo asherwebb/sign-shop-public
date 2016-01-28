@@ -9,6 +9,7 @@ var cloud = {
 		var FormData = Parse.Object.extend('ymca_form_user_data');
 		var query = new Parse.Query(FormData);
 		query.equalTo('ymca_corporate_number', organizationId);
+		query.equalTo('contract_signee' , true);
 		query.find({
 			success: function(results){
 				//alert('success');
@@ -16,9 +17,13 @@ var cloud = {
 				ModalDisplay.clear();
 				console.log(results.length);
 				if( results.length > 1 ){
-					ModalDisplay.init('proceed', 'someone from your organization has signed the contract');
+					//FIRE OFF NODE CREATE SHOPIFY ACCT AJAX
+					//localStorage.getItem('shopifyData');
+					//
+					ModalDisplay.init('proceed', 'someone from your organization has signed the contract', '<p>To complete your account setup please check your email for a registration link</p>');
+					//we need to send the registration details to node.js to finalize account creation
 				}else{
-					ModalDisplay.init('stop', 'you need to sign the contract before proceeding');
+					ModalDisplay.init('stop', 'you need to sign the contract before proceeding','<button class="goToContract">Go to Contract</button>');
 				}
 				//1 means no match (user signed up in parse first)
 				//greater than 1 means someone has already signed it

@@ -3,7 +3,7 @@ var AttachHandler = require('./attachHandler.js');
 
 var App = {
 	init: function(){
-		this.attachEventHandlers();
+		App.attachEventHandlers();
 	},
 	attachEventHandlers: function(){
 		AttachHandler.submitYmcaUserFormBtn();
